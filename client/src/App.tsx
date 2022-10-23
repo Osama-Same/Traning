@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import { useState } from "react";
+import "./App.css";
+import Navigation from "./components/Navigation";
+import { ToastContainer } from "react-toastify";
+import { MainStateType } from "./components/mainState";
+import { MainPage } from "./components/mainPage";
+import {UserCard} from "./components/usersCard"
 function App() {
+  const [mainState, setMainState] = useState<MainStateType>({
+    render: "",
+    language: "EN",
+    user: null,
+    allOrigins: [],
+    allBrands: [],
+    allUnits: [],
+    allCategories: [],
+    allProducts: [],
+    allUsersProfiles: [],
+    UsersStore: [],
+    userProfile: null,
+    selectedUser: null,
+    currentOrder: null,
+    allUserOrder: [],
+    startOrders: [],
+    endOrders: [],
+    allUserProductOrders : []
+  });
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ToastContainer />
+      <Navigation mainState={mainState} setMainState={setMainState} />
+      <MainPage mainState={mainState} setMainState={setMainState} />
+
     </div>
   );
 }
