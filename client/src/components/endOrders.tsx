@@ -16,7 +16,7 @@ interface EndOrderPageProps {
   setMainState: (m: MainStateType) => void;
 }
 export function EndOrderPage({ mainState, setMainState }: EndOrderPageProps) {
-  const { endOrders } = mainState;
+
   const [open, setOpen] = useState(false);
   const [selectedEndOrder, setSelectedEndOrder] = useState(null);
 
@@ -40,7 +40,7 @@ export function EndOrderPage({ mainState, setMainState }: EndOrderPageProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {endOrders?.map((uo: any) => {
+            {mainState?.userProfile.endOrder.map((uo: any) => {
               return (
                 <TableRow
                   key={uo.id}

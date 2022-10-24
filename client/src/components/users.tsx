@@ -1,4 +1,4 @@
-import { MainStateType, RegisteredUserType } from "./mainState";
+import { MainStateType } from "./mainState";
 import originsService from "../service/originsService";
 import brandsService from "../service/brandsService";
 import unitsService from "../service/unitsService";
@@ -8,7 +8,6 @@ import registerdUsersService from "../service/registerdUsersService";
 import usersProductsService from "../service/usersProductsService";
 import usersOrdersService from "../service/usersOrdersService";
 import userProductsOrdersService from "../service/userProductsOrdersService";
-
 
 export async function updateUserState(
   mainState: MainStateType,
@@ -45,16 +44,20 @@ export async function updateUserState(
 
   // _all User and Products and user Order
 
-  _allUsersProfiles.forEach((userProfile:any) => {
+  _allUsersProfiles.forEach((userProfile: any) => {
     userProfile.userProducts = _alluserProducts.filter(
-      (up:any) => up.userid == userProfile.userid
+      (up: any) => up.userid == userProfile.userid
     );
     userProfile.userProducts.forEach((up: any) => {
-      up.product = _allProducts.find((p:any) => p.id == up.productid);
+      up.product = _allProducts.find((p: any) => p.id == up.productid);
     });
     userProfile.orders = _allUsersOrders.filter(
-      (o:any) => o.userprofileid == userProfile.id && o.status == 0
+      (o: any) => o.userprofileid == userProfile.id
     );
+    userProfile.startOrder = _allUsersOrders.filter(
+      (so: any) => so.status === 0
+    );
+    userProfile.endOrder = _allUsersOrders.filter((so: any) => so.status !== 0);
     userProfile.orders.forEach((userOrder: any) => {
       userOrder.userProducts = _allUserProductOrders.filter(
         (upo) => upo.orderid == userOrder.id
@@ -126,17 +129,6 @@ export async function updateUserState(
       mainState.userProfile = _allUsersProfiles.find(
         (u) => u.userid == user?.id
       );
-
-      // orders
-/* 
-      _allUsersOrders.forEach((uo) => {
-        uo.startOrder = _allUserProductOrders.find((so) => so.status === 0);
-        uo.endOrder = _allUserProductOrders.filter((eo) => eo.status === 1);
-      }); */
-             const startOrder = _allUsersOrders.filter((o) => o.status === 0);
-      const endOrders = _allUsersOrders.filter((o) => o.status === 1); 
-      mainState.startOrders = startOrder;
-      mainState.endOrders = endOrders;
     }
   }
   setMainState({ ...mainState });

@@ -37,26 +37,7 @@ interface NavigationProps {
 const Navigation = ({ mainState, setMainState }: NavigationProps) => {
   const { user } = mainState;
   const [openConfirmDelDlg, setopenConfirmDelDlg] = useState(false);
-  const breadcrumbs = [
-    <Link
-      underline="hover"
-      key="1"
-      color="inherit"
-      href="/"
-      onClick={handleClick}
-    >
-      MUI
-    </Link>,
-    <Link
-      underline="hover"
-      key="2"
-      color="inherit"
-      href="/material-ui/getting-started/installation/"
-      onClick={handleClick}
-    >
-      Core
-    </Link>,
-  ];
+
   return (
     <ThemeProvider theme={darkTheme}>
       {user && user.authorization === "admin" && (
@@ -164,14 +145,9 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                   Users Products
                 </MenuItem>
               </NavDropdown>
-              <Breadcrumbs separator="›" aria-label="breadcrumb">
-                {breadcrumbs}
-              </Breadcrumbs>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                <Breadcrumbs separator="›" aria-label="breadcrumb">
-                  {breadcrumbs}
 
-                  {/*     <Button
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Button
                   color="inherit"
                   onClick={() => {
                     mainState.render = "usersCard";
@@ -183,14 +159,13 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                     src={mainState?.selectedUser?.logo}
                   />
                   {mainState?.selectedUser?.publishednameen}
-                </Button> */}
-                </Breadcrumbs>
+                </Button>
               </Typography>
               {mainState.userProfile && (
                 <div>
                   <Badge
                     badgeContent={
-                      mainState.endOrders && mainState.endOrders.length
+                      mainState?.userProfile?.endOrder && mainState.userProfile?.endOrder?.length
                     }
                     color="secondary"
                   >
@@ -207,7 +182,7 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                   </Badge>
                   <Badge
                     badgeContent={
-                      mainState.startOrders && mainState.startOrders.length
+                      mainState.userProfile.startOrder && mainState.userProfile.startOrder.length
                     }
                     color="secondary"
                   >

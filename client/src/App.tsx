@@ -23,19 +23,9 @@ function App() {
     selectedUser: null,
     currentOrder: null,
     allUserOrder: [],
-    startOrders: [],
-    endOrders: [],
     allUserProductOrders: [],
   });
-  useEffect(() => {
-    update();
-  });
-  const [brand, setBrand] = useState([]);
-  const update = async () => {
-    const _allBrands = await brandsService._get();
-    setBrand(_allBrands);
-  };
-  console.log(brand);
+
   return (
     <div className="App">
       <ToastContainer />

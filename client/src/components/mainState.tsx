@@ -10,12 +10,10 @@ export type MainStateType = {
   allUsersProfiles: UserProfileType[];
   allUserProductOrders: UsersOrdersProductType[];
   UsersStore: UsersStoreType[];
-  userProfile: UserProfileType | null;
+  userProfile: UserProfileType | null | any;
   selectedUser: UserProfileType | null;
   currentOrder: UserOrderType | null | any;
   allUserOrder: UserOrderType[];
-  startOrders: UserOrderType[];
-  endOrders: UserOrderType[];
 };
 
 // user
@@ -96,6 +94,8 @@ export type UserProfileType = {
   publishednameen: string;
   publishednamear: string;
   logo: string;
+  startOrder: UsersOrdersProductType;
+  endOrder: UsersOrdersProductType;
 };
 
 //  Users Store Type
@@ -123,4 +123,6 @@ export type UserOrderType = {
   latitude?: number;
   longitude?: number;
   userProducts: UsersOrdersProductType[];
+  startOrder: UsersOrdersProductType[];
+  endOrder: UsersOrdersProductType[];
 };
