@@ -3,7 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import jwtDecode from "jwt-decode";
 import httpService from "./httpService";
-const url = "http://147.182.183.104/";
+//const url = "http://147.182.183.104/";
+const url = "https://traning.vercel.app/";
 export async function registerUser(user: any) {
   try {
     const res = await axios.post(url + "api/users", user);

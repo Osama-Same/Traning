@@ -8,7 +8,7 @@ import registerdUsersService from "../service/registerdUsersService";
 import usersProductsService from "../service/usersProductsService";
 import usersOrdersService from "../service/usersOrdersService";
 import userProductsOrdersService from "../service/userProductsOrdersService";
-import { getCurrentUser, loginUser } from "../service/userService";
+
 
 export async function updateUserState(
   mainState: MainStateType,
