@@ -165,7 +165,8 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                 <div>
                   <Badge
                     badgeContent={
-                      mainState?.userProfile?.endOrder && mainState.userProfile?.endOrder?.length
+                      mainState?.userProfile?.endOrder &&
+                      mainState.userProfile?.endOrder?.length
                     }
                     color="secondary"
                   >
@@ -182,7 +183,8 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                   </Badge>
                   <Badge
                     badgeContent={
-                      mainState.userProfile.startOrder && mainState.userProfile.startOrder.length
+                      mainState.userProfile.startOrder &&
+                      mainState.userProfile.startOrder.length
                     }
                     color="secondary"
                   >
@@ -199,6 +201,16 @@ const Navigation = ({ mainState, setMainState }: NavigationProps) => {
                   </Badge>
                 </div>
               )}
+              <Button
+                color="inherit"
+                onClick={() => {
+                  mainState.language =
+                    mainState.language === "EN" ? "AR" : "EN";
+                  setMainState({ ...mainState });
+                }}
+              >
+                {mainState.language === "EN" ? `AR` : `EN`}
+              </Button>
               <NavDropdown title={user.name} id="basic-nav-dropdown">
                 <MenuItem
                   onClick={() => {

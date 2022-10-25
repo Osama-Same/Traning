@@ -224,12 +224,14 @@ function CategoriesForm({
             if (category.id == 0) {
               category.id = parseInt(res.insertId);
               mainState.allCategories = [category, ...mainState.allCategories];
+              setMainState({ ...mainState });
+            } else {
+              setloading(false);
+              setOpen(false);
+              mainState.render = "categories";
+              mainState.allCategories = [category, ...mainState.allCategories];
+              setMainState({ ...mainState });
             }
-
-            setloading(false);
-            setOpen(false);
-            mainState.render = "categories";
-            setMainState({ ...mainState });
           }}
         >
           {loading ? <CircularProgress /> : "Save"}
@@ -358,9 +360,10 @@ export function CategoryNode({
           setloading(false);
           mainState.allCategories = mainState.allCategories.filter(
             (u) => u.id != selectedCategory.id
+            
           );
-
-          mainState.render = "categories";
+          
+          mainState.render = "categories"
           setMainState({ ...mainState });
         }}
       />

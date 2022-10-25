@@ -4,7 +4,7 @@ import {
   BrandType,
   OriginType,
   CategoryType,
-  ProductType
+  ProductType,
 } from "./mainState";
 import { CategoriesTree } from "./categories";
 import Dialog from "@mui/material/Dialog";
@@ -34,7 +34,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
 import usersProductsService from "../service/usersProductsService";
 const baseImagesURL = "http://www.tochangehybrid.com/groceriesImages/products/";
-
 
 //========================================================================================================
 interface ProductsPageProps {
@@ -128,6 +127,7 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                   };
                   setSelectedProduct(newProduct);
                   setOpen(true);
+                  setMainState({ ...mainState });
                 }}
               >
                 <AddIcon />
@@ -147,7 +147,6 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                   <TableCell align="center">unit</TableCell>
                   <TableCell align="center">barcode</TableCell>
                   <TableCell align="center">descriptionen</TableCell>
-                  <TableCell align="center">descriptionar</TableCell>
                   <TableCell align="center">image</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
@@ -225,9 +224,7 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                       <TableCell align="center">
                         {product.descriptionen}
                       </TableCell>
-                      <TableCell align="center">
-                        {product.descriptionar}
-                      </TableCell>
+
                       <TableCell align="center">
                         <img
                           src={`${baseImagesURL}${product.id}.jpg`}
@@ -272,12 +269,14 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                 if (!selectedProduct) return;
                 setloading(true);
                 await ProductsService._delete(selectedProduct.id);
-                setloading(false);
+
                 mainState.allProducts = mainState.allProducts.filter(
                   (u) => u.id != selectedProduct.id
                 );
                 mainState.render = "products";
+
                 setMainState({ ...mainState });
+                setloading(false);
               }}
             />
             {selectedProduct && (
@@ -502,6 +501,7 @@ export function ProductForm({
             if (product.id == 0) {
               product.id = parseInt(res.insertId);
               mainState.allProducts = [product, ...mainState.allProducts];
+              setMainState({ ...mainState });
             }
             setloading(false);
             setOpen(false);

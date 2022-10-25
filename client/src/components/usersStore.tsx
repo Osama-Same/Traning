@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { MainStateType , BrandType  ,OriginType ,CategoryType ,UsersStoreType} from "./mainState";
+import {
+  MainStateType,
+  BrandType,
+  OriginType,
+  CategoryType,
+  UsersStoreType,
+} from "./mainState";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -16,9 +22,18 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import CircularProgress from "@mui/material/CircularProgress";
-import AutoCompleteSelect from "./common/AutoCompleteSelect";
-import { CategoriesTree } from "./categories";
-
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import CardHeader from "@mui/material/CardHeader";
+import Avatar from "@mui/material/Avatar";
+import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 interface UsersStorePageProps {
   mainState: MainStateType;
   setMainState: (m: MainStateType) => void;
@@ -28,7 +43,7 @@ export function UsersStorePage({
   setMainState,
 }: UsersStorePageProps) {
   const { UsersStore } = mainState;
-
+  console.log("UsersStore", UsersStore);
   const [selectedStore, setSelectedStore] = useState<UsersStoreType | null>(
     null
   );
@@ -40,158 +55,218 @@ export function UsersStorePage({
   const [dispProducts, setdispProducts] = useState(mainState.allProducts);
   const [selectedProductCategory, setselectedProductCategory] =
     useState<CategoryType | null>(null);
+  const [search, setSearch] = useState("");
 
   return (
-    <div
-      className="container-fluid"
-      style={{ marginTop: "5%", marginBottom: "5%" }}
-    >
-      <div className="row">
-        <div className="col-3">
-          <AutoCompleteSelect
-            textLabel="Brand"
-            options={mainState.allBrands}
-            selectedOption={selectedBrand}
-            onChange={(brand: any) => setselectedBrand(brand)}
-            labelOption="nameen"
-            labelImage="logo"
-          />
-          <br></br>
-          <AutoCompleteSelect
-            textLabel="Origin"
-            options={mainState.allOrigins}
-            selectedOption={selectedOrigin}
-            onChange={(origin: any) => setSelectedOrigin(origin)}
-            labelOption="nameen"
-            labelImage="flag"
-          />
-          <br></br>
-          <div>
-            <CategoriesTree
-              allowEdit={false}
-              categories={mainState.allCategories}
-              mainState={mainState}
-              setMainState={setMainState}
-              onSelect={(category: CategoryType | any) => {
-                if (category && category.products) {
-                  setdispProducts(category.products);
-                }
-                if (category.categorytype !== 0) {
-                  setselectedProductCategory(category);
-                } else {
-                  setselectedProductCategory(null);
-                }
-              }}
+    <div className="container" style={{ marginTop: "5%", marginBottom: "5%" }}>
+      <Container component="main" maxWidth="xl">
+        <Box
+          sx={{
+            maxWidth: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Stack spacing={2} direction="row">
+            <TextField
+              fullWidth
+              label="Search"
+              id="fullWidth"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-          </div>
-        </div>
-
-        <div className="col">
-          <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">id</TableCell>
-                  <TableCell align="center">idUser</TableCell>
-                  <TableCell align="center">Product Description</TableCell>
-                  <TableCell align="center">quantity</TableCell>
-                  <TableCell align="center">costprice</TableCell>
-                  <TableCell align="center">salesprice</TableCell>
-                  <TableCell align="center">Update</TableCell>
-                  <TableCell align="center">Delete</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {UsersStore &&
-                  UsersStore.map((userProduct: any) => {
-                    return (
-                      <TableRow
-                        key={userProduct.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell align="center">{userProduct.id}</TableCell>
-                        <TableCell align="center">{userProduct.id}</TableCell>
-                        <TableCell align="center">
-                          {mainState.language === "EN"
-                            ? userProduct.product &&
-                              userProduct.product.category &&
-                              userProduct.product.category.publishednameen
-                            : userProduct.product &&
-                              userProduct.product.category &&
-                              userProduct.product.category.publishednamear}
-                        </TableCell>
-                        <TableCell align="center">
-                          {userProduct.quantity}
-                        </TableCell>
-                        <TableCell align="center">
-                          {userProduct.costprice}
-                        </TableCell>
-                        <TableCell align="center">
-                          {userProduct.salesprice}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => {
-                              setSelectedStore(userProduct);
-                              setOpen(true);
-                            }}
-                          >
-                            {mainState.language === "EN" ? "Update" : "تحديث"}
-                          </Button>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Button
-                            variant="contained"
-                            color="error"
-                            disabled={
-                              userProduct.product &&
-                              userProduct.product.length > 0
-                            }
-                            onClick={async () => {
-                              setSelectedStore(userProduct);
-                              setopenConfirmDelDlg(true);
-                            }}
-                          >
-                            {mainState.language === "EN" ? "Delete" : "حذف"}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-            <ConfirmDeleteDialog
-              open={openConfirmDelDlg}
-              setopen={setopenConfirmDelDlg}
-              text={`usersStore ${
-                selectedStore && selectedStore.id
-              }  will be deleted permenantly, are you sure?`}
-              onConfirm={async () => {
-                if (!selectedStore) return;
-                setloading(true);
-                await UsersProductsService._delete(selectedStore.id);
-                setloading(false);
-                mainState.UsersStore = mainState.UsersStore.filter(
-                  (u) => u.id != selectedStore.id
-                );
+            <Button
+              variant="outlined"
+              onClick={() => {
+                let SearchProduct: any = UsersStore.filter((e: any) => {
+                  return (
+                    e.product.descriptionen
+                      .toUpperCase()
+                      .search(search.toUpperCase()) !== -1
+                  );
+                });
+                mainState.UsersStore = SearchProduct;
                 setMainState({ ...mainState });
               }}
-            />
-            {selectedStore && (
-              <StoreForm
-                open={open}
-                setOpen={setOpen}
-                userProduct={selectedStore}
-                mainState={mainState}
-                setMainState={setMainState}
-              />
-            )}
-          </TableContainer>
-        </div>
+            >
+              Search
+            </Button>
+          </Stack>
+        </Box>
+      </Container>
+      <div className="row">
+        {UsersStore.map((userProduct: any) => {
+          return (
+            <div className="col-md-4 pt-3 pb-3">
+              <Card>
+                <CardHeader
+                  avatar={
+                    <Avatar aria-label="recipe">{userProduct.userid}</Avatar>
+                  }
+                  action={
+                    <IconButton aria-label="settings">
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  title={
+                    mainState.language === "EN"
+                      ? userProduct.product && userProduct.product.descriptionen
+                      : userProduct.product && userProduct.product.descriptionar
+                  }
+                />
+                <CardMedia
+                  component="img"
+                  height="194"
+                  image={userProduct.product && userProduct.product.image}
+                  alt="Paella dish"
+                />
+                <CardContent>
+                  <Stack
+                    mb={2}
+                    mt={2}
+                    spacing={2}
+                    direction="row"
+                    justifyContent="space-around"
+                    alignItems="center"
+                  >
+                    <Chip
+                      avatar={
+                        <Avatar
+                          alt="Natacha"
+                          src={
+                            userProduct.product.origin &&
+                            userProduct.product.origin.flag
+                          }
+                        />
+                      }
+                      label={
+                        mainState.language === "EN"
+                          ? userProduct.product.origin &&
+                            userProduct.product.origin.nameen
+                          : userProduct.product.origin &&
+                            userProduct.product.origin.namear
+                      }
+                      variant="outlined"
+                    />
+                    <Chip
+                      avatar={
+                        <Avatar
+                          alt="Natacha"
+                          src={
+                            userProduct.product.category &&
+                            userProduct.product.category.logo
+                          }
+                        />
+                      }
+                      label={
+                        mainState.language === "EN"
+                          ? userProduct.product &&
+                            userProduct.product.category &&
+                            userProduct.product.category.publishednameen
+                          : userProduct.product &&
+                            userProduct.product.category &&
+                            userProduct.product.category.publishednamear
+                      }
+                      variant="outlined"
+                    />
+                    <Chip
+                      avatar={
+                        <Avatar
+                          alt="Natacha"
+                          src={
+                            userProduct.product.brand &&
+                            userProduct.product.brand.logo
+                          }
+                        />
+                      }
+                      label={
+                        mainState.language === "EN"
+                          ? userProduct.product &&
+                            userProduct.product.brand &&
+                            userProduct.product.brand.nameen
+                          : userProduct.product &&
+                            userProduct.product.brand &&
+                            userProduct.product.brand.namear
+                      }
+                      variant="outlined"
+                    />
+                  </Stack>
+                  <Stack
+                    mb={2}
+                    mt={2}
+                    spacing={2}
+                    direction="row"
+                    justifyContent="space-around"
+                    alignItems="center"
+                  >
+                    <Chip
+                      label={`Cost Price : ${userProduct.costprice}`}
+                      variant="outlined"
+                    />
+                    <Chip
+                      label={`Quantity : ${userProduct.quantity}`}
+                      variant="outlined"
+                    />
+                    <Chip
+                      label={`sales price : ${userProduct.salesprice}`}
+                      variant="outlined"
+                    />
+                  </Stack>
+                </CardContent>
+                <CardActions disableSpacing>
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      setSelectedStore(userProduct);
+                      setOpen(true);
+                    }}
+                  >
+                    {mainState.language === "EN" ? "Update" : "تحديث"}
+                  </Button>
+                  <Button
+                    disabled={
+                      userProduct.product && userProduct.product.length > 0
+                    }
+                    onClick={async () => {
+                      setSelectedStore(userProduct);
+                      setopenConfirmDelDlg(true);
+                    }}
+                  >
+                    {mainState.language === "EN" ? "Delete" : "حذف"}
+                  </Button>
+                </CardActions>
+              </Card>
+            </div>
+          );
+        })}
+
+        <ConfirmDeleteDialog
+          open={openConfirmDelDlg}
+          setopen={setopenConfirmDelDlg}
+          text={`usersStore ${
+            selectedStore && selectedStore.id
+          }  will be deleted permenantly, are you sure?`}
+          onConfirm={async () => {
+            if (!selectedStore) return;
+            setloading(true);
+            await UsersProductsService._delete(selectedStore.id);
+            mainState.UsersStore = mainState.UsersStore.filter(
+              (u) => u.id != selectedStore.id
+            );
+            setloading(false);
+            setMainState({ ...mainState });
+          }}
+        />
+        {selectedStore && (
+          <StoreForm
+            open={open}
+            setOpen={setOpen}
+            userProduct={selectedStore}
+            mainState={mainState}
+            setMainState={setMainState}
+          />
+        )}
       </div>
     </div>
   );
