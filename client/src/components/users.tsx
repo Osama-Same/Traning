@@ -89,16 +89,6 @@ export async function updateUserState(
     }
   });
 
-  // selected Users
-  mainState.userProfile = _allUsersProfiles.find((u) => u.userid == user?.id);
-
-  mainState.allUserOrder = _allUsersOrders;
-  mainState.allOrigins = _allOrigins;
-  mainState.allBrands = _allBrands;
-  mainState.allUnits = _allUnits;
-  mainState.allCategories = _allCategories;
-  mainState.allProducts = _allProducts;
-
   //========================================================================================================
   if (!user) {
     mainState.render = "usersCard";
@@ -113,11 +103,21 @@ export async function updateUserState(
     mainState.allUserProductOrders = _allUserProductOrders;
   } else {
     if (user.authorization === "admin") {
-      mainState.render = "units";
+      mainState.render = "products";
+      mainState.allOrigins = _allOrigins;
+      mainState.allBrands = _allBrands;
+      mainState.allUnits = _allUnits;
+      mainState.allCategories = _allCategories;
+      mainState.allProducts = _allProducts;
+      setMainState({ ...mainState });
+
     }
     if (user.authorization === "user") {
       mainState.render = "usersCard";
       mainState.UsersStore = _userProducts;
+      mainState.userProfile = _allUsersProfiles.find(
+        (u) => u.userid == user?.id
+      );
       mainState.allUsersProfiles = _allUsersProfiles;
       mainState.allUserOrder = _allUsersOrders;
       mainState.allOrigins = _allOrigins;
@@ -126,9 +126,6 @@ export async function updateUserState(
       mainState.allCategories = _allCategories;
       mainState.allProducts = _allProducts;
       mainState.allUserProductOrders = _allUserProductOrders;
-      mainState.userProfile = _allUsersProfiles.find(
-        (u) => u.userid == user?.id
-      );
     }
   }
   setMainState({ ...mainState });

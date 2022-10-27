@@ -33,6 +33,8 @@ import MenuItem from "@mui/material/MenuItem";
 import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
 import usersProductsService from "../service/usersProductsService";
+import productsService from "../service/productsService";
+import { updateUserState } from "./users";
 const baseImagesURL = "http://www.tochangehybrid.com/groceriesImages/products/";
 
 //========================================================================================================
@@ -43,12 +45,11 @@ interface ProductsPageProps {
 
 //========================================================================================================
 export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
-  const { allProducts, user, UsersStore } = mainState;
-  const myProducts = UsersStore.filter((p) => p.userid == user?.id);
+  const { allProducts } = mainState;
+
   const [selectedProductCategory, setselectedProductCategory] =
     useState<CategoryType | null>(null);
 
-  const [openConfirmDelDlg, setopenConfirmDelDlg] = useState(false);
   const [selectedBrand, setselectedBrand] = useState<BrandType | any>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductType | any>(
     null
@@ -56,8 +57,9 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
   const [selectedOrigin, setSelectedOrigin] = useState<OriginType | any>(null);
 
   const [open, setOpen] = useState(false);
+
   const [dispProducts, setdispProducts] = useState(allProducts);
-  const [loading, setloading] = useState(false);
+
   return (
     <div
       className="container-fluid"
@@ -93,6 +95,7 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                 // console.log("category", category.products);
                 if (category && category.products) {
                   setdispProducts(category.products);
+                  
                 }
                 if (category.categorytype !== 0) {
                   setselectedProductCategory(category);
@@ -113,6 +116,7 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                 }
                 onClick={() => {
                   if (!selectedProductCategory) return;
+                  setOpen(true);
                   const newProduct: ProductType = {
                     id: 0,
                     barcode: "",
@@ -126,164 +130,16 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
                     unitid: 0,
                   };
                   setSelectedProduct(newProduct);
-                  setOpen(true);
                   setMainState({ ...mainState });
                 }}
               >
                 <AddIcon />
               </Button>
             </Stack>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">id</TableCell>
-                  {user && user.authorization === "user" && (
-                    <TableCell align="center">check</TableCell>
-                  )}
-                  <TableCell align="center">Product Description</TableCell>
-                  <TableCell align="center">Brand</TableCell>
-                  <TableCell align="center">Origin</TableCell>
-                  <TableCell align="center">quantity</TableCell>
-                  <TableCell align="center">unit</TableCell>
-                  <TableCell align="center">barcode</TableCell>
-                  <TableCell align="center">descriptionen</TableCell>
-                  <TableCell align="center">image</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dispProducts.map((product: any) => {
-                  return (
-                    <TableRow
-                      key={product.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell align="center">{product.id}</TableCell>
-                      {user && user.authorization === "user" && (
-                        <TableCell align="center">
-                          <Checkbox
-                            checked={
-                              myProducts.find(
-                                (up: any) => up.productid == product.id
-                              )
-                                ? true
-                                : false
-                            }
-                            edge="start"
-                            tabIndex={-1}
-                            disableRipple
-                            onClick={async (e: any) => {
-                              if (e.target.checked) {
-                                let data: any = {
-                                  id: 0,
-                                  userid: user.id,
-                                  productid: product.id,
-                                  quantity: 0,
-                                  costprice: 0,
-                                  salesprice: 0,
-                                };
-
-                                await usersProductsService._save(data);
-                                mainState.UsersStore = [
-                                  data,
-                                  ...mainState.UsersStore,
-                                ];
-                                setMainState({ ...mainState });
-                              } else {
-                                const userProduct = myProducts.find(
-                                  (up: any) => up.productid == product.id
-                                );
-                                if (!userProduct) return;
-                                await usersProductsService._delete(
-                                  userProduct.id
-                                );
-                                mainState.UsersStore =
-                                  mainState.UsersStore.filter(
-                                    (u) => u.id !== userProduct.id
-                                  );
-                                setMainState({ ...mainState });
-                              }
-                            }}
-                          />
-                        </TableCell>
-                      )}
-                      <TableCell align="center">
-                        {product.category && product.category.publishednameen}
-                      </TableCell>
-                      <TableCell align="center">
-                        {product.brand && product.brand.nameen}
-                      </TableCell>
-                      <TableCell align="center">
-                        {product.origin && product.origin.nameen}
-                      </TableCell>
-                      <TableCell align="center"> {product.quantity}</TableCell>
-                      <TableCell align="center">
-                        {product.unit && product.unit.nameen}
-                      </TableCell>
-                      <TableCell align="center"> {product.barcode}</TableCell>
-                      <TableCell align="center">
-                        {product.descriptionen}
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <img
-                          src={`${baseImagesURL}${product.id}.jpg`}
-                          alt="url"
-                          width={80}
-                          height={50}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          aria-label="delete"
-                          color="error"
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setopenConfirmDelDlg(true);
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                        <IconButton
-                          color="primary"
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setOpen(true);
-                          }}
-                        >
-                          <Edit />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            <ConfirmDeleteDialog
-              open={openConfirmDelDlg}
-              setopen={setopenConfirmDelDlg}
-              text={`Product ${
-                selectedProduct && selectedProduct.descriptionen
-              }  will be deleted permenantly, are you sure?`}
-              onConfirm={async () => {
-                if (!selectedProduct) return;
-                setloading(true);
-                await ProductsService._delete(selectedProduct.id);
-
-                mainState.allProducts = mainState.allProducts.filter(
-                  (u) => u.id != selectedProduct.id
-                );
-                mainState.render = "products";
-
-                setMainState({ ...mainState });
-                setloading(false);
-              }}
-            />
-            {selectedProduct && (
-              <ProductForm
-                open={open}
-                setOpen={setOpen}
-                product={selectedProduct}
+            {dispProducts && (
+              <ProductsTable
+                products={dispProducts}
+                setdispProducts={setdispProducts}
                 mainState={mainState}
                 setMainState={setMainState}
               />
@@ -291,6 +147,17 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
           </TableContainer>
         </div>
       </div>
+      {selectedProduct && (
+        <ProductForm
+          open={open}
+          setOpen={setOpen}
+          products={dispProducts}
+          product={selectedProduct}
+          mainState={mainState}
+          setMainState={setMainState}
+          setdispProducts={setdispProducts}
+        />
+      )}
     </div>
   );
 }
@@ -300,17 +167,21 @@ export function ProductsPage({ mainState, setMainState }: ProductsPageProps) {
 interface ProductsFromProps {
   open: boolean;
   setOpen: (b: boolean) => void;
+  products: ProductType[] | any;
   product: ProductType;
   mainState: MainStateType;
   setMainState: (m: MainStateType) => void;
+  setdispProducts: (m: ProductType[]) => void;
 }
 //========================================================================================================
 export function ProductForm({
   open,
   setOpen,
+  products,
   product,
   mainState,
   setMainState,
+  setdispProducts,
 }: ProductsFromProps) {
   const { allUnits } = mainState;
   const [originid, setOriginid] = useState(product.originid);
@@ -323,6 +194,7 @@ export function ProductForm({
   const [barcode, setBarcode] = useState(product.barcode);
   const [loading, setloading] = useState(false);
   const [quantity, setQuantity] = useState(product.quantity);
+  console.log(product);
   useEffect(() => {
     if (!product) return;
     setCategoryid(product.categoryid);
@@ -500,6 +372,7 @@ export function ProductForm({
             const res: any = await ProductsService._save(product);
             if (product.id == 0) {
               product.id = parseInt(res.insertId);
+              setdispProducts([product, ...products]);
               mainState.allProducts = [product, ...mainState.allProducts];
               setMainState({ ...mainState });
             }
@@ -513,5 +386,176 @@ export function ProductForm({
         </Button>
       </DialogActions>
     </Dialog>
+  );
+}
+
+interface ProductTableProps {
+  products: ProductType | any;
+  mainState: MainStateType;
+  setMainState: (m: MainStateType) => void;
+  setdispProducts: (m: ProductType[]) => void;
+}
+export function ProductsTable({
+  products,
+  mainState,
+  setMainState,
+  setdispProducts,
+}: ProductTableProps) {
+  const { user, UsersStore } = mainState;
+  const myProducts = UsersStore.filter((p) => p.userid == user?.id);
+
+  const [openConfirmDelDlg, setopenConfirmDelDlg] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductType | any>(
+    null
+  );
+
+  const [open, setOpen] = useState(false);
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">id</TableCell>
+            {user && user.authorization === "user" && (
+              <TableCell align="center">check</TableCell>
+            )}
+            <TableCell align="center">Product Description</TableCell>
+            <TableCell align="center">Brand</TableCell>
+            <TableCell align="center">Origin</TableCell>
+            <TableCell align="center">quantity</TableCell>
+            <TableCell align="center">unit</TableCell>
+            <TableCell align="center">barcode</TableCell>
+            <TableCell align="center">descriptionen</TableCell>
+            <TableCell align="center">image</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        {products.map((product: any) => {
+          return (
+            <TableRow
+              key={product.id}
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell align="center">{product.id}</TableCell>
+              {user && user.authorization === "user" && (
+                <TableCell align="center">
+                  <Checkbox
+                    checked={
+                      myProducts.find((up: any) => up.productid == product.id)
+                        ? true
+                        : false
+                    }
+                    edge="start"
+                    tabIndex={-1}
+                    disableRipple
+                    onClick={async (e: any) => {
+                      if (e.target.checked) {
+                        let data: any = {
+                          id: 0,
+                          userid: user.id,
+                          productid: product.id,
+                          quantity: 0,
+                          costprice: 0,
+                          salesprice: 0,
+                        };
+
+                        await usersProductsService._save(data);
+                        mainState.UsersStore = [data, ...mainState.UsersStore];
+                        setMainState({ ...mainState });
+                      } else {
+                        const userProduct = myProducts.find(
+                          (up: any) => up.productid == product.id
+                        );
+                        if (!userProduct) return;
+                        await usersProductsService._delete(userProduct.id);
+                        mainState.UsersStore = mainState.UsersStore.filter(
+                          (u) => u.id !== userProduct.id
+                        );
+                        setMainState({ ...mainState });
+                      }
+                    }}
+                  />
+                </TableCell>
+              )}
+              <TableCell align="center">
+                {product?.category && product.category.publishednameen}
+              </TableCell>
+              <TableCell align="center">
+                {product.brand && product.brand.nameen}
+              </TableCell>
+              <TableCell align="center">
+                {product.origin && product.origin.nameen}
+              </TableCell>
+              <TableCell align="center"> {product.quantity}</TableCell>
+              <TableCell align="center">
+                {product.unit && product.unit.nameen}
+              </TableCell>
+              <TableCell align="center"> {product.barcode}</TableCell>
+              <TableCell align="center">{product.descriptionen}</TableCell>
+
+              <TableCell align="center">
+                <img
+                  src={`${baseImagesURL}${product.id}.jpg`}
+                  alt="url"
+                  width={80}
+                  height={50}
+                />
+              </TableCell>
+              <TableCell align="center">
+                <IconButton
+                  aria-label="delete"
+                  color="error"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setopenConfirmDelDlg(true);
+                  }}
+                >
+                  <Delete />
+                </IconButton>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setOpen(true);
+                  }}
+                >
+                  <Edit />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </Table>
+
+      {selectedProduct && (
+        <ConfirmDeleteDialog
+          open={openConfirmDelDlg}
+          setopen={setopenConfirmDelDlg}
+          text={`Product ${
+            selectedProduct && selectedProduct.barcode
+          }  will be deleted permenantly, are you sure?`}
+          onConfirm={async () => {
+            await productsService._delete(selectedProduct.id);
+            mainState.allProducts = mainState.allProducts.filter(
+              (u) => u.id !== selectedProduct.id
+            );
+            setdispProducts([selectedProduct.id, ...products]);
+            setMainState({ ...mainState });
+          }}
+        />
+      )}
+
+      {selectedProduct && (
+        <ProductForm
+          open={open}
+          setOpen={setOpen}
+          products={products}
+          product={selectedProduct}
+          mainState={mainState}
+          setMainState={setMainState}
+          setdispProducts={setdispProducts}
+        />
+      )}
+    </TableContainer>
   );
 }

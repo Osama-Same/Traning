@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { MainStateType } from "./components/mainState";
 import { MainPage } from "./components/mainPage";
 import { UserCard } from "./components/usersCard";
-import brandsService from "./service/brandsService";
+import { updateUserState } from "./components/users";
 
 function App() {
   const [mainState, setMainState] = useState<MainStateType>({

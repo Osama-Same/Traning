@@ -3,7 +3,7 @@ import _ from "lodash";
 import { toast } from "react-toastify";
 import { getToken } from "./userService";
 const url = "http://147.182.183.104/api/sql";
-//const url = "https://traning.vercel.app/";
+
 axios.defaults.headers.common["x-auth-token"] = getToken();
 async function _get(tableName) {
   const sql = `select * from ${tableName}`;
